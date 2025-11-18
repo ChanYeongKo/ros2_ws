@@ -1,0 +1,16 @@
+Jetson nano, wsl2-ubuntu, windows의 ip주소를 출력하라.
+jetson nano: 192.168.0.133
+wsl2-ubuntu: 192.168.0.27
+windows: 192.168.0.27
+
+같은 네트워크에 있는지 설명하라.
+jetson, wsl2-ubuntu,windows는 192.168.0 앞3자리가 다 같고
+wsl2-ubuntu, windows는 Mirroed networking mode로 전체가 같다.
+
+Jetson nano 에서 환경변수 ROS_DOMAIN_ID값을 확인하라.
+ROS_DOMAIN_ID: 3
+wsl2-ubuntu 에서 환경변수 ROS_DOMAIN_ID값을 확인하라.
+ROS_DOMAIN_ID: 3
+
+2개가 로봇번호와 같은지 확인하라
+3으로 같습니다.
