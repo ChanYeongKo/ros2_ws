@@ -9,8 +9,11 @@ wsl2-ubuntu, windows는 Mirroed networking mode로 전체가 같다.
 
 Jetson nano 에서 환경변수 ROS_DOMAIN_ID값을 확인하라.
 ROS_DOMAIN_ID: 3
+ROS_NAMESPACE: jetson3
+
 wsl2-ubuntu 에서 환경변수 ROS_DOMAIN_ID값을 확인하라.
 ROS_DOMAIN_ID: 3
+ROS_NAMESPACE: jetson3
 
 2개가 로봇번호와 같은지 확인하라
 3으로 같습니다.
