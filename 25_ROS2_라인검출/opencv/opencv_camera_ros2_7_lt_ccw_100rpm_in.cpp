@@ -8,68 +8,68 @@ using namespace cv;
 
 int main()
 {
-	// 1. ºñµğ¿À Ä¸Ã³ ÃÊ±âÈ­ (0: À¥Ä·, "video.mp4": µ¿¿µ»ó ÆÄÀÏ)
-	VideoCapture cap("C:\\Users\\kochan\\Desktop\\ÀÚÀ²ÁÖÇà\\7_lt_ccw_100rpm_in.mp4");
+	// 1. ë¹„ë””ì˜¤ ìº¡ì²˜ ì´ˆê¸°í™” (0: ì›¹ìº , "video.mp4": ë™ì˜ìƒ íŒŒì¼)
+	VideoCapture cap("C:\\Users\\kochan\\Desktop\\ììœ¨ì£¼í–‰\\7_lt_ccw_100rpm_in.mp4");
 
 	if (!cap.isOpened()) {
-		cerr << "¿¡·¯: Ä«¸Ş¶ó¸¦ ¿­ ¼ö ¾ø½À´Ï´Ù." << endl;
+		cerr << "ì—ëŸ¬: ì¹´ë©”ë¼ë¥¼ ì—´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤." << endl;
 		return -1;
 	}
 
 	Mat frame, gray, binary, labels, stats, centroids, corrected_gray;
 	double current_mean, target_mean, diff, min_dist, center_x, target_x, error = 0.0;
 	int h, w, cnt, best_idx;
-	static double prev_x = -1.0;//staticÀ¸·Î ¼±¾ğÇØ¼­ while¹®ÀÌ ´Ù½Ã ½ÇÇàµÇ¾îµµ ÀÌÀü °ªÀÌ À¯ÁöµÈ´Ù.
-	const double MAX_MOVE_THRESHOLD = 80.0; //const·Î MAX_MOVE_THRESHOLDÀÇ °ªÀ» °íÁ¤ÇÑ´Ù.
+	static double prev_x = -1.0;//staticìœ¼ë¡œ ì„ ì–¸í•´ì„œ whileë¬¸ì´ ë‹¤ì‹œ ì‹¤í–‰ë˜ì–´ë„ ì´ì „ ê°’ì´ ìœ ì§€ëœë‹¤.
+	const double MAX_MOVE_THRESHOLD = 80.0; //constë¡œ MAX_MOVE_THRESHOLDì˜ ê°’ì„ ê³ ì •í•œë‹¤.
 	while (true)
 	{
-		auto startTime = std::chrono::steady_clock::now(); // ½ÃÀÛ½Ã°£ ÀúÀå
-		// 2. ÇÁ·¹ÀÓ ÀĞ±â
+		auto startTime = std::chrono::steady_clock::now(); // ì‹œì‘ì‹œê°„ ì €ì¥
+		// 2. í”„ë ˆì„ ì½ê¸°
 		cap >> frame;
-		if (frame.empty()) break; // ¿µ»óÀÌ ³¡³ª¸é Á¾·á
+		if (frame.empty()) break; // ì˜ìƒì´ ëë‚˜ë©´ ì¢…ë£Œ
 
-		// === ¿©±â¼­ºÎÅÍ ¿µ»óÃ³¸® ·ÎÁ÷ (ROSÀÇ Äİ¹é ÇÔ¼ö ³»ºÎ ³»¿ë) ===
+		// === ì—¬ê¸°ì„œë¶€í„° ì˜ìƒì²˜ë¦¬ ë¡œì§ (ROSì˜ ì½œë°± í•¨ìˆ˜ ë‚´ë¶€ ë‚´ìš©) ===
 
-		// ±×·¹ÀÌ½ºÄÉÀÏ º¯È¯
+		// ê·¸ë ˆì´ìŠ¤ì¼€ì¼ ë³€í™˜
 		cvtColor(frame, gray, COLOR_BGR2GRAY);
 
-		// ¹à±â º¸Á¤ ·ÎÁ÷
+		// ë°ê¸° ë³´ì • ë¡œì§
 		Scalar avg = mean(gray);
 		current_mean = avg.val[0];
 		target_mean = 160.0;
 		diff = target_mean - current_mean;
 
-		// ¹à±â º¸Á¤ (Æ÷È­ ¿¬»ê ÀÚµ¿ Àû¿ë)
+		// ë°ê¸° ë³´ì • (í¬í™” ì—°ì‚° ìë™ ì ìš©)
 		corrected_gray = gray + diff;
 
-		// ÀÌÁøÈ­
+		// ì´ì§„í™”
 		threshold(corrected_gray, binary, 210, 255, THRESH_BINARY);
 
-		// ROI ¼³Á¤ (ÇÏ´Ü 1/4)
+		// ROI ì„¤ì • (í•˜ë‹¨ 1/4)
 		h = binary.rows;
 		w = binary.cols;
 		Rect roi(0, 3 * h / 4, w, h / 4);
-		Mat binary_half = binary(roi); // ROI ÀÌ¹ÌÁö ÂüÁ¶
+		Mat binary_half = binary(roi); // ROI ì´ë¯¸ì§€ ì°¸ì¡°
 
-		// °´Ã¼ °ËÃâ (·¹ÀÌºí¸µ)
+		// ê°ì²´ ê²€ì¶œ (ë ˆì´ë¸”ë§)
 		cnt = connectedComponentsWithStats(binary_half, labels, stats, centroids);
 
 
 		cvtColor(binary_half, binary_half, COLOR_GRAY2BGR);
-		best_idx = -1; //¶óÀÎÀ¸·Î ÃßÁ¤µÇ´Â °´Ã¼ÀÇ ÀÎµ¦½º
-		min_dist = DBL_MAX; //ÃÖ¼Ò °Å¸® ÀúÀå¿ë (ÃÊ±â°ªÀº ÃÖ´ë·Î ¼®Á¤)
-		center_x = binary_half.cols / 2.0; // ÀÌ¹ÌÁöÀÇ °¡·Î Áß½É ÁÂ
-		if (prev_x != -1.0) {//while¹®ÀÌ µÎ¹øÂ° ½ÇÇàµÉ¶§ºÎÅÍ ½ÇÇàÇÏ´Â Á¶°Ç
+		best_idx = -1; //ë¼ì¸ìœ¼ë¡œ ì¶”ì •ë˜ëŠ” ê°ì²´ì˜ ì¸ë±ìŠ¤
+		min_dist = DBL_MAX; //ìµœì†Œ ê±°ë¦¬ ì €ì¥ìš© (ì´ˆê¸°ê°’ì€ ìµœëŒ€ë¡œ ì„ì •)
+		center_x = binary_half.cols / 2.0; // ì´ë¯¸ì§€ì˜ ê°€ë¡œ ì¤‘ì‹¬ ì¢Œ
+		if (prev_x != -1.0) {//whileë¬¸ì´ ë‘ë²ˆì§¸ ì‹¤í–‰ë ë•Œë¶€í„° ì‹¤í–‰í•˜ëŠ” ì¡°ê±´
 			target_x = prev_x;
 		}
-		else { target_x = center_x; }//while¹®ÀÌ Ã³À½ µ¹¶§ È­¸é Áß¾ÓÀ» ÀúÀåÇÏ´Â Á¶°Ç
+		else { target_x = center_x; }//whileë¬¸ì´ ì²˜ìŒ ëŒë•Œ í™”ë©´ ì¤‘ì•™ì„ ì €ì¥í•˜ëŠ” ì¡°ê±´
 		for (int i = 1; i < cnt; i++)
 		{
-			auto p = stats.ptr<int>(i);//auto¸¦ »ç¿ëÇØ¼­ Æ÷ÀÎÅÍ °ªÀÌ ¹Ù²î¾îµµ ÀÚµ¿À¸·Î °è»ê¹× ¼öÁ¤ÇÏ°Ô ¹Ù²ÛÄÚµå ¿øº»: int* p
-			if (p[4] < 100 || p[4] > 7000) continue;//³ëÀÌÁî Á¦°Å(¹«½Ã)
+			auto p = stats.ptr<int>(i);//autoë¥¼ ì‚¬ìš©í•´ì„œ í¬ì¸í„° ê°’ì´ ë°”ë€Œì–´ë„ ìë™ìœ¼ë¡œ ê³„ì‚°ë° ìˆ˜ì •í•˜ê²Œ ë°”ê¾¼ì½”ë“œ ì›ë³¸: int* p
+			if (p[4] < 100 || p[4] > 7000) continue;//ë…¸ì´ì¦ˆ ì œê±°(ë¬´ì‹œ)
 
-			double cx = centroids.at<double>(i, 0);//ÁøÂ¥ ¶óÀÎÀÇ ¹«°Ô Áß½ÉÁ¤º¸
-			double dist = abs(target_x - cx); //È­¸é Áß¾Ó°úÀÇ °Å¸® °è»ê
+			double cx = centroids.at<double>(i, 0);//ì§„ì§œ ë¼ì¸ì˜ ë¬´ê²Œ ì¤‘ì‹¬ì •ë³´
+			double dist = abs(target_x - cx); //í™”ë©´ ì¤‘ì•™ê³¼ì˜ ê±°ë¦¬ ê³„ì‚°
 			if (dist < min_dist) {
 				min_dist = dist;
 				best_idx = i;
@@ -97,16 +97,16 @@ int main()
 		
 		
 		
-		auto endTime = std::chrono::steady_clock::now(); // Á¾·á½Ã°£ ÀúÀå
-		float totalTime = std::chrono::duration<float, std::milli>(endTime - startTime).count();
-		cout << "Error: " << error << ", time: " << totalTime << "sec" << endl; // ½Ã°£Â÷ÀÌ(msec)Ãâ·Â
-		// === ¿µ»óÃ³¸® ·ÎÁ÷ ³¡ ===
+		auto endTime = std::chrono::steady_clock::now(); // ì¢…ë£Œì‹œê°„ ì €ì¥
+		float totalTime = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+		cout << fixed << setprecision(0) << "Error: " << error << ", time: " << totalTime << "msec" << endl; // ì‹œê°„ì°¨ì´(msec)ì¶œë ¥
+		// === ì˜ìƒì²˜ë¦¬ ë¡œì§ ë ===
 
-		// °á°ú Ãâ·Â
+		// ê²°ê³¼ ì¶œë ¥
 		imshow("Original", frame);
 		imshow("Binary ROI Result", binary_half);
 
-		// ESC Å°(27)¸¦ ´©¸£¸é Á¾·á
+		// ESC í‚¤(27)ë¥¼ ëˆ„ë¥´ë©´ ì¢…ë£Œ
 		if (waitKey(30) == 'q') break;
 	}
 
