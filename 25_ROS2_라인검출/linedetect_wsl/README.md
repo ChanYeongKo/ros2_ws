@@ -33,4 +33,5 @@ wsl에서 Publish한 메시지를 Mat으로 변환하여 영상 프레임에서 
 5. 이미지 출력
    imshow를 이용해 원본 영상과 이진화후 검출되는 영상을 출력합니다.
 
-   ![Uploading image.png…]()
+<img width="288" height="47" alt="image" src="https://github.com/user-attachments/assets/fee41f96-2d16-4574-a6a2-7288cfadbab1" />
+
