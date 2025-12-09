@@ -7,7 +7,7 @@ wsl에서 Publish한 메시지를 Mat으로 변환하여 영상 프레임에서 
    입력 영상을 받아서 압축을 풀고, Gray변환 + 밝기 보정 + 이진화 + 하단 1/4를 roi로 만들어 라인 검
    출하기 좋은 형태로 전처리 하는 코드이다.
 
-  <img width="596" height="141" alt="image" src="https://github.com/user-attachments/assets/bf4fb96d-1e58-40fe-80ce-b795ce5628e3" />
+    <img width="596" height="141" alt="image" src="https://github.com/user-attachments/assets/bf4fb96d-1e58-40fe-80ce-b795ce5628e3" />
 
 
 2. 레이블링
