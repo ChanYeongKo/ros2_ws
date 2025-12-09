@@ -1,4 +1,4 @@
-2101034 고찬
+2101034 고찬영
 
 5_lt_cw_100rpm_out영상 유튜브 링크 입니다. 
 https://youtu.be/h3j-cnr6kUs
