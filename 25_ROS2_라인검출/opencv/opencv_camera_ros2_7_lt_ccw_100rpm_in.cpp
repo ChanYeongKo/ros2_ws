@@ -8,7 +8,6 @@ using namespace cv;
 
 int main()
 {
-	// 1. 비디오 캡처 초기화 (0: 웹캠, "video.mp4": 동영상 파일)
 	VideoCapture cap("C:\\Users\\kochan\\Desktop\\자율주행\\7_lt_ccw_100rpm_in.mp4");
 
 	if (!cap.isOpened()) {
@@ -29,8 +28,6 @@ int main()
 		if (frame.empty()) break; // 영상이 끝나면 종료
 
 		// === 여기서부터 영상처리 로직 (ROS의 콜백 함수 내부 내용) ===
-
-		// 그레이스케일 변환
 		cvtColor(frame, gray, COLOR_BGR2GRAY);
 
 		// 밝기 보정 로직
@@ -41,10 +38,7 @@ int main()
 
 		// 밝기 보정 (포화 연산 자동 적용)
 		corrected_gray = gray + diff;
-
-		// 이진화
 		threshold(corrected_gray, binary, 210, 255, THRESH_BINARY);
-
 		// ROI 설정 (하단 1/4)
 		h = binary.rows;
 		w = binary.cols;
@@ -112,3 +106,4 @@ int main()
 
 	return 0;
 }
+
